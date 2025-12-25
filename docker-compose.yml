@@ -1,0 +1,68 @@
+version: '3.8'
+
+services:
+  # Hardhat Local Blockchain Node
+  hardhat-node:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: supplychain-hardhat-node
+    ports:
+      - "8545:8545"
+    volumes:
+      - ./backend:/app
+      - ./client/src/artifacts:/app/client/src/artifacts
+      - ./client/src:/app/client/src
+    command: npm run node
+    networks:
+      - supplychain-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8545"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+      start_period: 10s
+
+  # Contract Deployment Service
+  deploy:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: supplychain-deploy
+    depends_on:
+      hardhat-node:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - ./client/src/artifacts:/app/client/src/artifacts
+      - ./client/src:/app/client/src
+    command: sh -c "npm run compile && sleep 5 && npm run deploy:local"
+    networks:
+      - supplychain-network
+    restart: "no"
+
+  # Next.js Frontend
+  frontend:
+    build:
+      context: ./client
+      dockerfile: Dockerfile
+    container_name: supplychain-frontend
+    depends_on:
+      - deploy
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./client:/app
+      - /app/node_modules
+      - /app/.next
+    environment:
+      - NODE_ENV=development
+      - NEXT_PUBLIC_NETWORK_ID=1337
+    command: npm run dev
+    networks:
+      - supplychain-network
+
+networks:
+  supplychain-network:
+    driver: bridge
+

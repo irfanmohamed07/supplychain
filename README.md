@@ -112,11 +112,23 @@ Order → Raw Material Supplier → Manufacturer → Distributor → Retailer �
 
 Before you begin, ensure you have the following installed:
 
-- **Node.js** (v18 or higher) - [Download](https://nodejs.org/)
+- **Node.js** (v18 or higher) - [Download](https://nodejs.org/) - *Not needed if using Docker*
 - **Git** - [Download](https://git-scm.com/downloads)
-- **Ganache** - [Download](https://trufflesuite.com/ganache/)
+- **Docker Desktop** (Recommended) - [Download](https://www.docker.com/products/docker-desktop/) - *Easiest way to run*
+- **Ganache** - [Download](https://trufflesuite.com/ganache/) - *Optional if using Docker*
 - **MetaMask** - [Chrome Extension](https://chrome.google.com/webstore/detail/metamask) | [Firefox Add-on](https://addons.mozilla.org/en-US/firefox/addon/ether-metamask/)
 - **VS Code** (Recommended) - [Download](https://code.visualstudio.com/)
+
+### 🐳 Quick Start with Docker (Recommended)
+
+**The easiest way to run this project!**
+
+1. Install [Docker Desktop](https://www.docker.com/products/docker-desktop/)
+2. Navigate to project directory
+3. Run: `docker-compose up`
+4. Open http://localhost:3000
+
+That's it! Docker handles everything automatically. See [DOCKER_SETUP.md](DOCKER_SETUP.md) for detailed instructions.
 
 ### Step 1: Clone the Repository
 
@@ -199,19 +211,35 @@ The deployment script will automatically update `client/src/deployments.json` wi
 
 ## 🚀 Running the Project
 
-### Start Ganache
+### Option 1: Using Docker (Easiest - Recommended)
+
+```bash
+docker-compose up
+```
+
+This single command will:
+- Start the blockchain node
+- Compile contracts
+- Deploy contracts
+- Start the frontend
+
+See [DOCKER_SETUP.md](DOCKER_SETUP.md) for complete Docker instructions.
+
+### Option 2: Manual Setup
+
+#### Start Ganache
 
 1. Open Ganache application
 2. Create or open a workspace
 3. Ensure the server is running
 
-### Deploy Contracts (if not already deployed)
+#### Deploy Contracts (if not already deployed)
 
 ```bash
 npx hardhat run scripts/deploy.ts --network ganache
 ```
 
-### Start the Frontend
+#### Start the Frontend
 
 ```bash
 cd client

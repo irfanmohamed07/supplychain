@@ -58,3 +58,7 @@ client/src/deployments.json
 *.tmp
 *.temp
 backend/client/
+
+# Docker
+.docker/
+docker-compose.override.yml
