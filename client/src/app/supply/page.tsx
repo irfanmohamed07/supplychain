@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { loadWeb3, getContract } from '@/lib/web3'
 
-interface Medicine {
+interface FlowerBatch {
   id: string
   name: string
   description: string
@@ -20,8 +20,8 @@ export default function Supply() {
   const [currentAccount, setCurrentAccount] = useState('')
   const [loader, setLoader] = useState(true)
   const [supplyChain, setSupplyChain] = useState<any>(null)
-  const [med, setMed] = useState<{ [key: number]: Medicine }>({})
-  const [medStage, setMedStage] = useState<string[]>([])
+  const [flowerBatch, setFlowerBatch] = useState<{ [key: number]: FlowerBatch }>({})
+  const [flowerStage, setFlowerStage] = useState<string[]>([])
   const [rmsId, setRmsId] = useState('')
   const [manId, setManId] = useState('')
   const [disId, setDisId] = useState('')
@@ -40,17 +40,17 @@ export default function Supply() {
       setSupplyChain(contract)
       setCurrentAccount(account)
 
-      const medCtr = await contract.methods.medicineCtr().call()
-      const medData: { [key: number]: Medicine } = {}
-      const medStageData: string[] = []
+      const flowerCtr = await contract.methods.medicineCtr().call()
+      const flowerData: { [key: number]: FlowerBatch } = {}
+      const flowerStageData: string[] = []
 
-      for (let i = 0; i < medCtr; i++) {
-        medData[i] = await contract.methods.MedicineStock(i + 1).call()
-        medStageData[i] = await contract.methods.showStage(i + 1).call()
+      for (let i = 0; i < flowerCtr; i++) {
+        flowerData[i] = await contract.methods.MedicineStock(i + 1).call()
+        flowerStageData[i] = await contract.methods.showStage(i + 1).call()
       }
 
-      setMed(medData)
-      setMedStage(medStageData)
+      setFlowerBatch(flowerData)
+      setFlowerStage(flowerStageData)
       setLoader(false)
     } catch (err: any) {
       const errorMessage = err?.message || 'The smart contract is not deployed to the current network'
@@ -87,7 +87,7 @@ export default function Supply() {
       if (receipt) {
         loadBlockchainData()
         setRmsId('')
-        alert('Raw materials supplied successfully!')
+        alert('Raw materials supplied successfully! Flower batch is ready for manufacturing.')
       }
     } catch (err: any) {
       let errorMessage = 'An error occurred!'
@@ -122,7 +122,7 @@ export default function Supply() {
       if (receipt) {
         loadBlockchainData()
         setManId('')
-        alert('Manufacturing completed successfully!')
+        alert('Manufacturing completed successfully! Flower batch is ready for distribution.')
       }
     } catch (err: any) {
       let errorMessage = 'An error occurred!'
@@ -157,7 +157,7 @@ export default function Supply() {
       if (receipt) {
         loadBlockchainData()
         setDisId('')
-        alert('Distribution completed successfully!')
+        alert('Distribution completed successfully! Flower batch is ready for retail.')
       }
     } catch (err: any) {
       let errorMessage = 'An error occurred!'
@@ -192,7 +192,7 @@ export default function Supply() {
       if (receipt) {
         loadBlockchainData()
         setRetId('')
-        alert('Retail completed successfully!')
+        alert('Retail completed successfully! Flower batch is now available for sale.')
       }
     } catch (err: any) {
       let errorMessage = 'An error occurred!'
@@ -227,7 +227,7 @@ export default function Supply() {
       if (receipt) {
         loadBlockchainData()
         setSoldId('')
-        alert('Item marked as sold successfully!')
+        alert('Flower batch marked as sold successfully!')
       }
     } catch (err: any) {
       let errorMessage = 'An error occurred!'
@@ -290,7 +290,7 @@ export default function Supply() {
               </div>
               <div>
                 <h1 className="text-3xl font-bold text-gray-800">Supply Chain Flow</h1>
-                <p className="text-gray-600 text-sm">Manage the flow of materials through the supply chain</p>
+                <p className="text-gray-600 text-sm">Manage the flow of flower batches through the supply chain</p>
               </div>
             </div>
             <button
@@ -388,20 +388,20 @@ export default function Supply() {
               <svg className="w-6 h-6 mr-2 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
               </svg>
-              Available Batteries
+              Available Flower Batches
             </h2>
             <div className="text-sm text-gray-500">
-              Total: {Object.keys(med).length} items
+              Total: {Object.keys(flowerBatch).length} batches
             </div>
           </div>
           
-          {Object.keys(med).length === 0 ? (
+          {Object.keys(flowerBatch).length === 0 ? (
             <div className="text-center py-12">
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
-              <p className="text-gray-500 text-lg">No batteries available yet</p>
-              <p className="text-gray-400 text-sm mt-2">Add batteries in the Order Materials page</p>
+              <p className="text-gray-500 text-lg">No flower batches available yet</p>
+              <p className="text-gray-400 text-sm mt-2">Add flower batches in the Order Flower Batches page</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -415,21 +415,21 @@ export default function Supply() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {Object.keys(med).map((key) => {
+                  {Object.keys(flowerBatch).map((key) => {
                     const index = parseInt(key)
-                    const stage = medStage[index]
+                    const stage = flowerStage[index]
                     return (
                       <tr key={key} className="hover:bg-orange-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center">
                             <div className="w-10 h-10 bg-gradient-to-br from-orange-500 to-red-500 rounded-lg flex items-center justify-center text-white font-bold mr-3">
-                              {med[index].id}
+                              {flowerBatch[index].id}
                             </div>
-                            <span className="font-semibold text-gray-800">{med[index].id}</span>
+                            <span className="font-semibold text-gray-800">{flowerBatch[index].id}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-medium text-gray-800">{med[index].name}</td>
-                        <td className="px-6 py-4 text-gray-600">{med[index].description}</td>
+                        <td className="px-6 py-4 font-medium text-gray-800">{flowerBatch[index].name}</td>
+                        <td className="px-6 py-4 text-gray-600">{flowerBatch[index].description}</td>
                         <td className="px-6 py-4">
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStageColor(stage)}`}>
                             {stage}
@@ -475,7 +475,7 @@ export default function Supply() {
                   className="w-full pl-12 pr-4 py-3 border-2 border-blue-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent text-lg bg-white"
                   type="text"
                   onChange={handlerChangeRMSId}
-                  placeholder="Enter Battery ID"
+                  placeholder="Enter Flower Batch ID"
                   value={rmsId}
                   required
                 />
@@ -521,7 +521,7 @@ export default function Supply() {
                   className="w-full pl-12 pr-4 py-3 border-2 border-green-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-transparent text-lg bg-white"
                   type="text"
                   onChange={handlerChangeManId}
-                  placeholder="Enter Battery ID"
+                  placeholder="Enter Flower Batch ID"
                   value={manId}
                   required
                 />
@@ -567,7 +567,7 @@ export default function Supply() {
                   className="w-full pl-12 pr-4 py-3 border-2 border-purple-300 rounded-xl focus:ring-2 focus:ring-purple-500 focus:border-transparent text-lg bg-white"
                   type="text"
                   onChange={handlerChangeDisId}
-                  placeholder="Enter Battery ID"
+                  placeholder="Enter Flower Batch ID"
                   value={disId}
                   required
                 />
@@ -613,7 +613,7 @@ export default function Supply() {
                   className="w-full pl-12 pr-4 py-3 border-2 border-orange-300 rounded-xl focus:ring-2 focus:ring-orange-500 focus:border-transparent text-lg bg-white"
                   type="text"
                   onChange={handlerChangeRetId}
-                  placeholder="Enter Battery ID"
+                  placeholder="Enter Flower Batch ID"
                   value={retId}
                   required
                 />
@@ -659,7 +659,7 @@ export default function Supply() {
                   className="w-full pl-12 pr-4 py-3 border-2 border-red-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent text-lg bg-white"
                   type="text"
                   onChange={handlerChangeSoldId}
-                  placeholder="Enter Battery ID"
+                  placeholder="Enter Flower Batch ID"
                   value={soldId}
                   required
                 />

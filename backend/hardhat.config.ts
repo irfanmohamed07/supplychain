@@ -5,9 +5,10 @@ const config: HardhatUserConfig = {
   solidity: {
     version: '0.8.19',
     settings: {
+      viaIR: true,
       optimizer: {
         enabled: true,
-        runs: 200,
+        runs: 1000,
       },
     },
   },
@@ -15,15 +16,17 @@ const config: HardhatUserConfig = {
     sources: './contracts',
     tests: './test',
     cache: './cache',
-    artifacts: './client/src/artifacts',
+    artifacts: '../client/src/artifacts',
   },
   networks: {
     hardhat: {
       chainId: 1337,
+      allowUnlimitedContractSize: true,
     },
     localhost: {
       url: 'http://127.0.0.1:8545',
       chainId: 1337,
+      allowUnlimitedContractSize: true,
     },
     ganache: {
       url: 'http://127.0.0.1:7545',

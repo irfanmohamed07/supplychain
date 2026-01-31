@@ -3,11 +3,11 @@ import * as fs from 'fs'
 import * as path from 'path'
 
 async function main() {
-  console.log('Deploying SupplyChain contract...')
+  console.log('🌸 Deploying FloraChain contract...')
 
   const [deployer] = await ethers.getSigners()
   console.log('Deploying with account:', deployer.address)
-  
+
   const balance = await ethers.provider.getBalance(deployer.address)
   console.log('Account balance:', ethers.formatEther(balance), 'ETH')
 
@@ -15,32 +15,38 @@ async function main() {
     throw new Error('Account has no funds. Please fund the account or use a different account.')
   }
 
-  const SupplyChain = await ethers.getContractFactory('SupplyChain')
-  const supplyChain = await SupplyChain.deploy()
+  const FloraChain = await ethers.getContractFactory('FloraChain')
+  const floraChain = await FloraChain.deploy()
 
-  await supplyChain.waitForDeployment()
+  await floraChain.waitForDeployment()
 
-  const address = await supplyChain.getAddress()
+  const address = await floraChain.getAddress()
   const network = await ethers.provider.getNetwork()
   const chainId = network.chainId.toString()
 
-  console.log('SupplyChain deployed to:', address)
+  console.log('🌸 FloraChain deployed to:', address)
   console.log('Network chain ID:', chainId)
 
   // Update deployments.json
   const deploymentsPath = path.join(__dirname, '../../client/src/deployments.json')
-  const deployments = JSON.parse(fs.readFileSync(deploymentsPath, 'utf8'))
+
+  let deployments = { networks: {} }
+
+  // Check if file exists
+  if (fs.existsSync(deploymentsPath)) {
+    deployments = JSON.parse(fs.readFileSync(deploymentsPath, 'utf8'))
+  }
 
   if (!deployments.networks[chainId]) {
     deployments.networks[chainId] = {}
   }
 
-  deployments.networks[chainId].SupplyChain = {
+  deployments.networks[chainId].FloraChain = {
     address: address,
   }
 
   fs.writeFileSync(deploymentsPath, JSON.stringify(deployments, null, 2))
-  console.log('Deployment info saved to client/src/deployments.json')
+  console.log('✅ Deployment info saved to client/src/deployments.json')
 }
 
 main()
@@ -49,4 +55,3 @@ main()
     console.error(error)
     process.exit(1)
   })
-

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import { loadWeb3, getContract } from '@/lib/web3'
 import { checkIsOwner, getContractOwner } from '@/lib/contractUtils'
 
-interface Medicine {
+interface FlowerBatch {
   id: string
   name: string
   description: string
@@ -21,10 +21,10 @@ export default function AddMed() {
   const [currentAccount, setCurrentAccount] = useState('')
   const [loader, setLoader] = useState(true)
   const [supplyChain, setSupplyChain] = useState<any>(null)
-  const [med, setMed] = useState<{ [key: number]: Medicine }>({})
-  const [medName, setMedName] = useState('')
-  const [medDes, setMedDes] = useState('')
-  const [medStage, setMedStage] = useState<string[]>([])
+  const [flowerBatch, setFlowerBatch] = useState<{ [key: number]: FlowerBatch }>({})
+  const [flowerName, setFlowerName] = useState('')
+  const [flowerDes, setFlowerDes] = useState('')
+  const [flowerStage, setFlowerStage] = useState<string[]>([])
   const [isOwner, setIsOwner] = useState(false)
   const [contractOwner, setContractOwner] = useState<string>('')
   const [roleCounts, setRoleCounts] = useState({
@@ -47,17 +47,17 @@ export default function AddMed() {
       setSupplyChain(contract)
       setCurrentAccount(account)
 
-      const medCtr = await contract.methods.medicineCtr().call()
-      const medData: { [key: number]: Medicine } = {}
-      const medStageData: string[] = []
+      const flowerCtr = await contract.methods.medicineCtr().call()
+      const flowerData: { [key: number]: FlowerBatch } = {}
+      const flowerStageData: string[] = []
 
-      for (let i = 0; i < medCtr; i++) {
-        medData[i] = await contract.methods.MedicineStock(i + 1).call()
-        medStageData[i] = await contract.methods.showStage(i + 1).call()
+      for (let i = 0; i < flowerCtr; i++) {
+        flowerData[i] = await contract.methods.MedicineStock(i + 1).call()
+        flowerStageData[i] = await contract.methods.showStage(i + 1).call()
       }
 
-      setMed(medData)
-      setMedStage(medStageData)
+      setFlowerBatch(flowerData)
+      setFlowerStage(flowerStageData)
       
       // Check role counts
       const rmsCount = await contract.methods.rmsCtr().call()
@@ -87,24 +87,24 @@ export default function AddMed() {
     }
   }
 
-  const handlerChangeNameMED = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMedName(event.target.value)
+  const handlerChangeNameFlower = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFlowerName(event.target.value)
   }
 
-  const handlerChangeDesMED = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setMedDes(event.target.value)
+  const handlerChangeDesFlower = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setFlowerDes(event.target.value)
   }
 
-  const handlerSubmitMED = async (event: React.FormEvent) => {
+  const handlerSubmitFlower = async (event: React.FormEvent) => {
     event.preventDefault()
     setIsSubmitting(true)
     try {
-      const receipt = await supplyChain.methods.addMedicine(medName, medDes).send({ from: currentAccount })
+      const receipt = await supplyChain.methods.addMedicine(flowerName, flowerDes).send({ from: currentAccount })
       if (receipt) {
         loadBlockchainData()
-        setMedName('')
-        setMedDes('')
-        alert('Material order created successfully!')
+        setFlowerName('')
+        setFlowerDes('')
+        alert('Flower batch order created successfully!')
       }
     } catch (err: any) {
       let errorMessage = 'An error occurred!'
@@ -119,7 +119,7 @@ export default function AddMed() {
         if (errorMessage.includes('Owner')) {
           errorMessage = 'Only the contract owner can add materials. Make sure you are using the account that deployed the contract.'
         } else if (errorMessage.includes('rmsCtr') || errorMessage.includes('manCtr') || errorMessage.includes('disCtr') || errorMessage.includes('retCtr')) {
-          errorMessage = 'Please register at least one role of each type (RMS, Manufacturer, Distributor, Retailer) before adding materials.'
+          errorMessage = 'Please register at least one role of each type (RMS, Manufacturer, Distributor, Retailer) before adding flower batches.'
         } else {
           errorMessage = `Transaction failed: ${errorMessage}`
         }
@@ -166,8 +166,8 @@ export default function AddMed() {
                 </svg>
               </div>
               <div>
-                <h1 className="text-3xl font-bold text-gray-800">Order Materials</h1>
-                <p className="text-gray-600 text-sm">Create new material orders in the supply chain</p>
+                <h1 className="text-3xl font-bold text-gray-800">Order Flower Batches</h1>
+                <p className="text-gray-600 text-sm">Create new flower batch orders in the supply chain</p>
               </div>
             </div>
             <button
@@ -197,7 +197,7 @@ export default function AddMed() {
               <div className="ml-3 flex-1">
                 <h3 className="text-red-800 font-bold mb-2">Access Restricted</h3>
                 <p className="text-red-700 text-sm mb-2">
-                  Only the contract owner can create material orders.
+                  Only the contract owner can create flower batch orders.
                 </p>
                 <div className="mt-3 space-y-1 text-xs">
                   <p className="text-red-600">
@@ -224,7 +224,7 @@ export default function AddMed() {
               <div className="ml-3 flex-1">
                 <h3 className="text-yellow-800 font-bold mb-2">Requirements Not Met</h3>
                 <p className="text-yellow-700 text-sm">
-                  You must register at least one role of each type before ordering materials.
+                  You must register at least one role of each type before ordering flower batches.
                 </p>
               </div>
             </div>
@@ -310,10 +310,10 @@ export default function AddMed() {
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6v6m0 0v6m0-6h6m-6 0H6" />
               </svg>
             </div>
-            <h2 className="text-2xl font-bold text-gray-800">Create New Material Order</h2>
+            <h2 className="text-2xl font-bold text-gray-800">Create New Flower Batch Order</h2>
           </div>
           
-          <form onSubmit={handlerSubmitMED} className="space-y-5">
+          <form onSubmit={handlerSubmitFlower} className="space-y-5">
             <div className="relative">
               <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
                 <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -323,9 +323,9 @@ export default function AddMed() {
               <input
                 className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-lg"
                 type="text"
-                onChange={handlerChangeNameMED}
-                placeholder="Material Name"
-                value={medName}
+                onChange={handlerChangeNameFlower}
+                placeholder="Flower Batch Name (e.g., Red Roses)"
+                value={flowerName}
                 required
                 disabled={isSubmitting}
               />
@@ -340,9 +340,9 @@ export default function AddMed() {
               <input
                 className="w-full pl-12 pr-4 py-3 border-2 border-gray-300 rounded-xl focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-all text-lg"
                 type="text"
-                onChange={handlerChangeDesMED}
-                placeholder="Material Description"
-                value={medDes}
+                onChange={handlerChangeDesFlower}
+                placeholder="Flower Batch Description"
+                value={flowerDes}
                 required
                 disabled={isSubmitting}
               />
@@ -400,10 +400,10 @@ export default function AddMed() {
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
                 </svg>
               </div>
-              <h2 className="text-2xl font-bold text-gray-800">Ordered Materials</h2>
+              <h2 className="text-2xl font-bold text-gray-800">Ordered Flower Batches</h2>
             </div>
             <div className="px-4 py-2 bg-green-100 text-green-700 rounded-lg font-semibold text-sm">
-              Total: {Object.keys(med).length} items
+              Total: {Object.keys(flowerBatch).length} batches
             </div>
           </div>
           
@@ -412,8 +412,8 @@ export default function AddMed() {
               <svg className="w-16 h-16 text-gray-300 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
-              <p className="text-gray-500 text-lg font-semibold">No materials ordered yet</p>
-              <p className="text-gray-400 text-sm mt-2">Create your first material order above</p>
+              <p className="text-gray-500 text-lg font-semibold">No flower batches ordered yet</p>
+              <p className="text-gray-400 text-sm mt-2">Create your first flower batch order above</p>
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -427,21 +427,21 @@ export default function AddMed() {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {Object.keys(med).map((key) => {
+                  {Object.keys(flowerBatch).map((key) => {
                     const index = parseInt(key)
-                    const stage = medStage[index]
+                    const stage = flowerStage[index]
                     return (
                       <tr key={key} className="hover:bg-green-50 transition-colors">
                         <td className="px-6 py-4">
                           <div className="flex items-center">
                             <div className="w-10 h-10 bg-gradient-to-br from-green-500 to-emerald-500 rounded-lg flex items-center justify-center text-white font-bold mr-3 shadow-md">
-                              {med[index].id}
+                              {flowerBatch[index].id}
                             </div>
-                            <span className="font-semibold text-gray-800">{med[index].id}</span>
+                            <span className="font-semibold text-gray-800">{flowerBatch[index].id}</span>
                           </div>
                         </td>
-                        <td className="px-6 py-4 font-medium text-gray-800">{med[index].name}</td>
-                        <td className="px-6 py-4 text-gray-600">{med[index].description}</td>
+                        <td className="px-6 py-4 font-medium text-gray-800">{flowerBatch[index].name}</td>
+                        <td className="px-6 py-4 text-gray-600">{flowerBatch[index].description}</td>
                         <td className="px-6 py-4">
                           <span className={`px-3 py-1 rounded-full text-xs font-semibold border ${getStageColor(stage)}`}>
                             {stage}

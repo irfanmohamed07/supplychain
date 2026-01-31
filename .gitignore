@@ -62,3 +62,12 @@ backend/client/
 # Docker
 .docker/
 docker-compose.override.yml
+
+# Python
+milp-service/venv/
+__pycache__/
+*.py[cod]
+*$py.class
+.ipynb_checkpoints
+venv/
+ENV/
